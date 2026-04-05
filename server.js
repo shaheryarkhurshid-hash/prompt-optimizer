@@ -6,7 +6,7 @@ app.use(cors());
 app.use(express.json());
 app.use(express.static("public"));
 
-const GROQ_API_KEY = "process.env.GROQ_API_KEY";
+const GROQ_API_KEY = process.env.GROQ_API_KEY;
 app.post("/optimize", async (req, res) => {
   const { prompt, mode, instruction } = req.body;
 
