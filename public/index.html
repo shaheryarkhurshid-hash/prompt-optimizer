@@ -1,0 +1,498 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+<title>PromptCraft — AI Prompt Optimizer</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap');
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', system-ui, sans-serif;
+    background: #0c1a0e;
+    color: #f0ede4;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 60px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Geometric background pattern */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      repeating-linear-gradient(60deg, rgba(212,175,55,0.03) 0px, rgba(212,175,55,0.03) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(-60deg, rgba(212,175,55,0.03) 0px, rgba(212,175,55,0.03) 1px, transparent 1px, transparent 60px),
+      repeating-linear-gradient(0deg, rgba(212,175,55,0.02) 0px, rgba(212,175,55,0.02) 1px, transparent 1px, transparent 60px);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* Top glow */
+  body::after {
+    content: '';
+    position: fixed;
+    top: -150px; left: 50%;
+    transform: translateX(-50%);
+    width: 700px; height: 500px;
+    background: radial-gradient(ellipse, rgba(34,100,34,0.25) 0%, transparent 70%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .wrapper {
+    width: 100%;
+    max-width: 720px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 40px;
+  }
+
+  .arabic-text {
+    font-family: 'Amiri', serif;
+    font-size: 1.1rem;
+    color: #d4af37;
+    margin-bottom: 16px;
+    letter-spacing: 0.05em;
+    opacity: 0.85;
+  }
+
+  .logo {
+    display: inline-flex;
+    align-items: center;
+    gap: 14px;
+    margin-bottom: 10px;
+  }
+
+  .logo-icon {
+    width: 52px; height: 52px;
+    background: linear-gradient(135deg, #1a5c1a, #2d8a2d);
+    border-radius: 16px;
+    display: flex; align-items: center; justify-content: center;
+    font-size: 26px;
+    border: 1px solid rgba(212,175,55,0.4);
+    box-shadow: 0 0 24px rgba(34,100,34,0.4), inset 0 1px 0 rgba(212,175,55,0.2);
+  }
+
+  .logo-name {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+  }
+
+  .logo-name .part1 { color: #f0ede4; }
+  .logo-name .part2 { color: #d4af37; }
+
+  .tagline {
+    color: #8a9e8a;
+    font-size: 14px;
+    margin-top: 6px;
+  }
+
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 20px 0 32px;
+    opacity: 0.4;
+  }
+
+  .divider-line {
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, #d4af37, transparent);
+  }
+
+  .divider-diamond {
+    width: 8px; height: 8px;
+    background: #d4af37;
+    transform: rotate(45deg);
+  }
+
+  /* Card */
+  .card {
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(212,175,55,0.15);
+    border-radius: 20px;
+    padding: 32px;
+    margin-bottom: 16px;
+    backdrop-filter: blur(10px);
+    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
+  }
+
+  .section-label {
+    font-size: 11px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.12em;
+    color: #d4af37;
+    margin-bottom: 14px;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .section-label::before {
+    content: '◆';
+    font-size: 8px;
+    color: #d4af37;
+  }
+
+  textarea {
+    width: 100%;
+    padding: 14px 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(212,175,55,0.2);
+    background: rgba(255,255,255,0.04);
+    color: #f0ede4;
+    font-size: 15px;
+    font-family: inherit;
+    resize: vertical;
+    outline: none;
+    line-height: 1.65;
+    transition: border-color 0.2s, box-shadow 0.2s;
+  }
+
+  textarea:focus {
+    border-color: rgba(212,175,55,0.5);
+    box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+  }
+
+  textarea::placeholder { color: #3d5c3d; }
+
+  /* Modes */
+  .modes {
+    display: flex;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin: 20px 0;
+  }
+
+  .mode-btn {
+    padding: 7px 18px;
+    border-radius: 30px;
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    border: 1px solid rgba(212,175,55,0.2);
+    background: transparent;
+    color: #8a9e8a;
+    transition: all 0.2s;
+    font-family: inherit;
+  }
+
+  .mode-btn:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+    background: rgba(212,175,55,0.05);
+  }
+
+  .mode-btn.active {
+    background: linear-gradient(135deg, #1a5c1a, #2d8a2d);
+    border-color: rgba(212,175,55,0.4);
+    color: #d4af37;
+    box-shadow: 0 4px 15px rgba(34,100,34,0.3);
+  }
+
+  /* Optimize button */
+  #optimizeBtn {
+    width: 100%;
+    padding: 15px;
+    border-radius: 12px;
+    font-size: 15px;
+    font-weight: 600;
+    background: linear-gradient(135deg, #1a5c1a, #2d8a2d);
+    color: #d4af37;
+    border: 1px solid rgba(212,175,55,0.3);
+    cursor: pointer;
+    font-family: inherit;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    transition: all 0.2s;
+    box-shadow: 0 4px 20px rgba(34,100,34,0.3);
+    letter-spacing: 0.02em;
+  }
+
+  #optimizeBtn:hover {
+    background: linear-gradient(135deg, #206020, #359035);
+    box-shadow: 0 6px 24px rgba(34,100,34,0.4);
+  }
+
+  #optimizeBtn:active { transform: scale(0.99); }
+
+  #optimizeBtn:disabled {
+    opacity: 0.35;
+    cursor: not-allowed;
+  }
+
+  /* Spinner */
+  .spinner {
+    width: 16px; height: 16px;
+    border: 2px solid rgba(212,175,55,0.3);
+    border-top-color: #d4af37;
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+    display: none;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  /* Output */
+  #result-section { display: none; }
+
+  .output-box {
+    padding: 16px;
+    border-radius: 12px;
+    border: 1px solid rgba(212,175,55,0.2);
+    background: rgba(212,175,55,0.03);
+    font-size: 15px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    color: #f0ede4;
+    margin-bottom: 16px;
+  }
+
+  .tags {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    margin-bottom: 16px;
+  }
+
+  .tag {
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 12px;
+    border-radius: 20px;
+    background: rgba(34,100,34,0.2);
+    border: 1px solid rgba(212,175,55,0.2);
+    color: #d4af37;
+  }
+
+  .actions { display: flex; gap: 8px; }
+
+  .action-btn {
+    padding: 8px 20px;
+    border-radius: 10px;
+    font-size: 13px;
+    font-weight: 500;
+    border: 1px solid rgba(212,175,55,0.2);
+    background: transparent;
+    color: #8a9e8a;
+    cursor: pointer;
+    font-family: inherit;
+    transition: all 0.2s;
+  }
+
+  .action-btn:hover {
+    border-color: #d4af37;
+    color: #d4af37;
+    background: rgba(212,175,55,0.05);
+  }
+
+  #error-msg {
+    color: #f87171;
+    font-size: 13px;
+    margin-top: 12px;
+    display: none;
+    background: rgba(248,113,113,0.08);
+    border: 1px solid rgba(248,113,113,0.2);
+    padding: 10px 14px;
+    border-radius: 8px;
+  }
+
+  /* Footer */
+  footer {
+    margin-top: 32px;
+    text-align: center;
+    font-size: 12px;
+    color: #3d5c3d;
+  }
+
+  footer span { color: #d4af37; }
+
+  /* Corner decorations */
+  .corner-tl, .corner-tr, .corner-bl, .corner-br {
+    position: absolute;
+    width: 20px; height: 20px;
+    border-color: rgba(212,175,55,0.3);
+    border-style: solid;
+  }
+  .corner-tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
+  .corner-tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
+  .corner-bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
+  .corner-br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
+</style>
+</head>
+<body>
+<div class="wrapper">
+
+  <header>
+    <div class="arabic-text">محسّن الأوامر الذكي</div>
+    <div class="logo">
+      <div class="logo-icon">✦</div>
+      <span class="logo-name"><span class="part1">Prompt</span><span class="part2">Craft</span></span>
+    </div>
+    <p class="tagline">Transform vague prompts into powerful, precise instructions</p>
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-diamond"></div>
+      <div class="divider-line"></div>
+    </div>
+  </header>
+
+  <!-- Input -->
+  <div class="card">
+    <div class="corner-tl"></div><div class="corner-tr"></div>
+    <div class="corner-bl"></div><div class="corner-br"></div>
+
+    <div class="section-label">Your Prompt</div>
+    <textarea id="inputPrompt" rows="5" placeholder='Type your rough prompt here... e.g. "write something about marketing"'></textarea>
+
+    <div class="modes">
+      <button class="mode-btn active" onclick="setMode(this,'Balanced')">⚖️ Balanced</button>
+      <button class="mode-btn" onclick="setMode(this,'Detailed')">🔍 Detailed</button>
+      <button class="mode-btn" onclick="setMode(this,'Concise')">⚡ Concise</button>
+      <button class="mode-btn" onclick="setMode(this,'Creative')">🎨 Creative</button>
+      <button class="mode-btn" onclick="setMode(this,'Technical')">🔧 Technical</button>
+    </div>
+
+    <button id="optimizeBtn" onclick="optimize()">
+      <div class="spinner" id="spinner"></div>
+      <span id="btnText">✦ Optimize Prompt</span>
+    </button>
+
+    <div id="error-msg"></div>
+  </div>
+
+  <!-- Output -->
+  <div class="card" id="result-section">
+    <div class="corner-tl"></div><div class="corner-tr"></div>
+    <div class="corner-bl"></div><div class="corner-br"></div>
+
+    <div class="section-label">Optimized Prompt</div>
+    <div class="tags" id="tags"></div>
+    <div class="output-box" id="output-box"></div>
+    <div class="actions">
+      <button class="action-btn" id="copyBtn" onclick="copyOutput()">Copy</button>
+      <button class="action-btn" onclick="useAsInput()">Use as Input</button>
+      <button class="action-btn" onclick="clearAll()">Clear</button>
+    </div>
+  </div>
+
+  <footer>Powered by <span>Groq AI</span> &nbsp;·&nbsp; PromptCraft &nbsp;·&nbsp; <span>بالعربية والأردية</span></footer>
+</div>
+
+<script>
+  var currentMode = 'Balanced';
+
+  var instructions = {
+    Balanced: 'Make this prompt clear, specific, and well-structured for general use.',
+    Detailed: 'Expand this prompt with rich context, examples, edge cases, and explicit output formatting instructions.',
+    Concise: 'Make this prompt tight and minimal — remove all unnecessary words while keeping full precision.',
+    Creative: 'Rewrite this prompt to unlock creative, imaginative, and open-ended responses.',
+    Technical: 'Transform this into a precise technical prompt with exact specifications, constraints, and formats.'
+  };
+
+  var improvementTags = {
+    Balanced: ['Added context', 'Clarified goal', 'Defined output format', 'Removed ambiguity'],
+    Detailed: ['Rich context added', 'Examples included', 'Edge cases covered', 'Structured format'],
+    Concise: ['Trimmed fluff', 'Sharp focus', 'Direct instruction'],
+    Creative: ['Open-ended framing', 'Exploration encouraged', 'Tone unlocked'],
+    Technical: ['Exact specs added', 'Constraints defined', 'Format specified']
+  };
+
+  function setMode(btn, m) {
+    document.querySelectorAll('.mode-btn').forEach(function(b) { b.classList.remove('active'); });
+    btn.classList.add('active');
+    currentMode = m;
+  }
+
+  async function optimize() {
+    var input = document.getElementById('inputPrompt').value.trim();
+    if (!input) return;
+
+    var btn = document.getElementById('optimizeBtn');
+    var spinner = document.getElementById('spinner');
+    var btnText = document.getElementById('btnText');
+
+    btn.disabled = true;
+    spinner.style.display = 'block';
+    btnText.textContent = 'Optimizing...';
+    document.getElementById('error-msg').style.display = 'none';
+    document.getElementById('result-section').style.display = 'none';
+
+    try {
+      var res = await fetch('/optimize', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ prompt: input, mode: currentMode, instruction: instructions[currentMode] })
+      });
+      var data = await res.json();
+      if (!res.ok) {
+        var err = document.getElementById('error-msg');
+        err.textContent = 'Error: ' + (data.error || 'Something went wrong');
+        err.style.display = 'block';
+      } else {
+        document.getElementById('output-box').textContent = data.optimized;
+        var tagsEl = document.getElementById('tags');
+        tagsEl.innerHTML = improvementTags[currentMode].map(function(t) {
+          return '<span class="tag">✦ ' + t + '</span>';
+        }).join('');
+        document.getElementById('result-section').style.display = 'block';
+      }
+    } catch(e) {
+      var err = document.getElementById('error-msg');
+      err.textContent = 'Could not connect to server: ' + e.message;
+      err.style.display = 'block';
+    }
+
+    btn.disabled = false;
+    spinner.style.display = 'none';
+    btnText.textContent = '✦ Optimize Prompt';
+  }
+
+  function copyOutput() {
+    navigator.clipboard.writeText(document.getElementById('output-box').textContent);
+    document.getElementById('copyBtn').textContent = 'Copied ✓';
+    setTimeout(function() { document.getElementById('copyBtn').textContent = 'Copy'; }, 2000);
+  }
+
+  function useAsInput() {
+    document.getElementById('inputPrompt').value = document.getElementById('output-box').textContent;
+    document.getElementById('result-section').style.display = 'none';
+  }
+
+  function clearAll() {
+    document.getElementById('inputPrompt').value = '';
+    document.getElementById('result-section').style.display = 'none';
+    document.getElementById('error-msg').style.display = 'none';
+  }
+</script>
+</body>
+</html>
