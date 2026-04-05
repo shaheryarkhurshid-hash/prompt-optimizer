@@ -5,256 +5,149 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
 <title>PromptCraft — AI Prompt Optimizer</title>
 <style>
-  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Amiri:wght@400;700&display=swap');
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
 
   * { box-sizing: border-box; margin: 0; padding: 0; }
 
   body {
     font-family: 'Inter', system-ui, sans-serif;
-    background: #0c1a0e;
-    color: #f0ede4;
+    background: #09090b;
+    color: #fafafa;
     min-height: 100vh;
     display: flex;
     flex-direction: column;
     align-items: center;
-    padding: 40px 20px 60px;
-    position: relative;
-    overflow-x: hidden;
+    padding: 48px 20px 80px;
   }
 
-  /* Geometric background pattern */
-  body::before {
-    content: '';
-    position: fixed;
-    inset: 0;
-    background-image:
-      repeating-linear-gradient(60deg, rgba(212,175,55,0.03) 0px, rgba(212,175,55,0.03) 1px, transparent 1px, transparent 60px),
-      repeating-linear-gradient(-60deg, rgba(212,175,55,0.03) 0px, rgba(212,175,55,0.03) 1px, transparent 1px, transparent 60px),
-      repeating-linear-gradient(0deg, rgba(212,175,55,0.02) 0px, rgba(212,175,55,0.02) 1px, transparent 1px, transparent 60px);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  /* Top glow */
-  body::after {
-    content: '';
-    position: fixed;
-    top: -150px; left: 50%;
-    transform: translateX(-50%);
-    width: 700px; height: 500px;
-    background: radial-gradient(ellipse, rgba(34,100,34,0.25) 0%, transparent 70%);
-    pointer-events: none;
-    z-index: 0;
-  }
-
-  .wrapper {
-    width: 100%;
-    max-width: 720px;
-    position: relative;
-    z-index: 1;
-  }
+  .wrapper { width: 100%; max-width: 680px; }
 
   /* Header */
-  header {
-    text-align: center;
-    margin-bottom: 40px;
-  }
+  header { text-align: center; margin-bottom: 48px; }
 
-  .arabic-text {
-    font-family: 'Amiri', serif;
-    font-size: 1.1rem;
-    color: #d4af37;
-    margin-bottom: 16px;
-    letter-spacing: 0.05em;
-    opacity: 0.85;
-  }
-
-  .logo {
-    display: inline-flex;
-    align-items: center;
-    gap: 14px;
-    margin-bottom: 10px;
-  }
-
-  .logo-icon {
-    width: 52px; height: 52px;
-    background: linear-gradient(135deg, #1a5c1a, #2d8a2d);
-    border-radius: 16px;
-    display: flex; align-items: center; justify-content: center;
-    font-size: 26px;
-    border: 1px solid rgba(212,175,55,0.4);
-    box-shadow: 0 0 24px rgba(34,100,34,0.4), inset 0 1px 0 rgba(212,175,55,0.2);
-  }
-
-  .logo-name {
-    font-size: 2rem;
-    font-weight: 700;
-    letter-spacing: -0.5px;
-  }
-
-  .logo-name .part1 { color: #f0ede4; }
-  .logo-name .part2 { color: #d4af37; }
-
-  .tagline {
-    color: #8a9e8a;
-    font-size: 14px;
-    margin-top: 6px;
-  }
-
-  /* Divider */
-  .divider {
-    display: flex;
-    align-items: center;
-    gap: 12px;
-    margin: 20px 0 32px;
-    opacity: 0.4;
-  }
-
-  .divider-line {
-    flex: 1;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, #d4af37, transparent);
-  }
-
-  .divider-diamond {
-    width: 8px; height: 8px;
-    background: #d4af37;
-    transform: rotate(45deg);
-  }
-
-  /* Card */
-  .card {
-    background: rgba(255,255,255,0.03);
-    border: 1px solid rgba(212,175,55,0.15);
-    border-radius: 20px;
-    padding: 32px;
-    margin-bottom: 16px;
-    backdrop-filter: blur(10px);
-    box-shadow: 0 8px 32px rgba(0,0,0,0.3);
-    position: relative;
-    overflow: hidden;
-  }
-
-  .card::before {
-    content: '';
-    position: absolute;
-    top: 0; left: 0; right: 0;
-    height: 1px;
-    background: linear-gradient(90deg, transparent, rgba(212,175,55,0.4), transparent);
-  }
-
-  .section-label {
+  .badge {
+    display: inline-block;
     font-size: 11px;
-    font-weight: 700;
+    font-weight: 600;
+    letter-spacing: 0.1em;
     text-transform: uppercase;
-    letter-spacing: 0.12em;
-    color: #d4af37;
-    margin-bottom: 14px;
-    display: flex;
-    align-items: center;
-    gap: 8px;
+    color: #22c55e;
+    background: rgba(34,197,94,0.1);
+    border: 1px solid rgba(34,197,94,0.2);
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 20px;
   }
 
-  .section-label::before {
-    content: '◆';
-    font-size: 8px;
-    color: #d4af37;
+  h1 {
+    font-size: 2.4rem;
+    font-weight: 700;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    margin-bottom: 12px;
+  }
+
+  h1 .highlight {
+    background: linear-gradient(135deg, #22c55e, #06b6d4);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  header p {
+    color: #71717a;
+    font-size: 15px;
+    font-weight: 400;
+  }
+
+  /* Input area */
+  .input-wrapper {
+    position: relative;
+    margin-bottom: 12px;
   }
 
   textarea {
     width: 100%;
-    padding: 14px 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(212,175,55,0.2);
-    background: rgba(255,255,255,0.04);
-    color: #f0ede4;
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid #27272a;
+    background: #111113;
+    color: #fafafa;
     font-size: 15px;
     font-family: inherit;
     resize: vertical;
     outline: none;
     line-height: 1.65;
     transition: border-color 0.2s, box-shadow 0.2s;
+    min-height: 140px;
   }
 
   textarea:focus {
-    border-color: rgba(212,175,55,0.5);
-    box-shadow: 0 0 0 3px rgba(212,175,55,0.08);
+    border-color: #22c55e;
+    box-shadow: 0 0 0 3px rgba(34,197,94,0.08);
   }
 
-  textarea::placeholder { color: #3d5c3d; }
+  textarea::placeholder { color: #3f3f46; }
 
   /* Modes */
   .modes {
     display: flex;
-    gap: 8px;
+    gap: 6px;
     flex-wrap: wrap;
-    margin: 20px 0;
+    margin-bottom: 16px;
   }
 
   .mode-btn {
-    padding: 7px 18px;
-    border-radius: 30px;
+    padding: 6px 16px;
+    border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
     cursor: pointer;
-    border: 1px solid rgba(212,175,55,0.2);
+    border: 1px solid #27272a;
     background: transparent;
-    color: #8a9e8a;
-    transition: all 0.2s;
+    color: #71717a;
+    transition: all 0.15s;
     font-family: inherit;
   }
 
   .mode-btn:hover {
-    border-color: #d4af37;
-    color: #d4af37;
-    background: rgba(212,175,55,0.05);
+    border-color: #3f3f46;
+    color: #a1a1aa;
   }
 
   .mode-btn.active {
-    background: linear-gradient(135deg, #1a5c1a, #2d8a2d);
-    border-color: rgba(212,175,55,0.4);
-    color: #d4af37;
-    box-shadow: 0 4px 15px rgba(34,100,34,0.3);
+    background: #052e16;
+    border-color: #166534;
+    color: #22c55e;
   }
 
-  /* Optimize button */
+  /* Button */
   #optimizeBtn {
     width: 100%;
-    padding: 15px;
+    padding: 14px;
     border-radius: 12px;
     font-size: 15px;
     font-weight: 600;
-    background: linear-gradient(135deg, #1a5c1a, #2d8a2d);
-    color: #d4af37;
-    border: 1px solid rgba(212,175,55,0.3);
+    background: #22c55e;
+    color: #052e16;
+    border: none;
     cursor: pointer;
     font-family: inherit;
     display: flex;
     align-items: center;
     justify-content: center;
-    gap: 10px;
+    gap: 8px;
     transition: all 0.2s;
-    box-shadow: 0 4px 20px rgba(34,100,34,0.3);
-    letter-spacing: 0.02em;
+    letter-spacing: -0.2px;
   }
 
-  #optimizeBtn:hover {
-    background: linear-gradient(135deg, #206020, #359035);
-    box-shadow: 0 6px 24px rgba(34,100,34,0.4);
-  }
-
+  #optimizeBtn:hover { background: #16a34a; }
   #optimizeBtn:active { transform: scale(0.99); }
+  #optimizeBtn:disabled { opacity: 0.35; cursor: not-allowed; }
 
-  #optimizeBtn:disabled {
-    opacity: 0.35;
-    cursor: not-allowed;
-  }
-
-  /* Spinner */
   .spinner {
     width: 16px; height: 16px;
-    border: 2px solid rgba(212,175,55,0.3);
-    border-top-color: #d4af37;
+    border: 2px solid rgba(5,46,22,0.3);
+    border-top-color: #052e16;
     border-radius: 50%;
     animation: spin 0.7s linear infinite;
     display: none;
@@ -262,57 +155,83 @@
 
   @keyframes spin { to { transform: rotate(360deg); } }
 
+  /* Divider */
+  .divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+  }
+
+  .divider-line { flex: 1; height: 1px; background: #18181b; }
+  .divider-text { font-size: 12px; color: #3f3f46; white-space: nowrap; }
+
   /* Output */
   #result-section { display: none; }
 
-  .output-box {
-    padding: 16px;
-    border-radius: 12px;
-    border: 1px solid rgba(212,175,55,0.2);
-    background: rgba(212,175,55,0.03);
-    font-size: 15px;
-    line-height: 1.75;
-    white-space: pre-wrap;
-    color: #f0ede4;
-    margin-bottom: 16px;
+  .output-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+
+  .output-label {
+    font-size: 12px;
+    font-weight: 600;
+    color: #22c55e;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
   }
 
   .tags {
     display: flex;
     flex-wrap: wrap;
     gap: 6px;
-    margin-bottom: 16px;
+    margin-bottom: 12px;
   }
 
   .tag {
     font-size: 11px;
-    font-weight: 600;
-    padding: 4px 12px;
-    border-radius: 20px;
-    background: rgba(34,100,34,0.2);
-    border: 1px solid rgba(212,175,55,0.2);
-    color: #d4af37;
+    font-weight: 500;
+    padding: 3px 10px;
+    border-radius: 6px;
+    background: #052e16;
+    border: 1px solid #166534;
+    color: #4ade80;
+  }
+
+  .output-box {
+    padding: 16px 18px;
+    border-radius: 14px;
+    border: 1px solid #27272a;
+    background: #111113;
+    font-size: 15px;
+    line-height: 1.75;
+    white-space: pre-wrap;
+    color: #e4e4e7;
+    margin-bottom: 14px;
   }
 
   .actions { display: flex; gap: 8px; }
 
   .action-btn {
-    padding: 8px 20px;
-    border-radius: 10px;
+    padding: 8px 18px;
+    border-radius: 8px;
     font-size: 13px;
     font-weight: 500;
-    border: 1px solid rgba(212,175,55,0.2);
+    border: 1px solid #27272a;
     background: transparent;
-    color: #8a9e8a;
+    color: #71717a;
     cursor: pointer;
     font-family: inherit;
-    transition: all 0.2s;
+    transition: all 0.15s;
   }
 
   .action-btn:hover {
-    border-color: #d4af37;
-    color: #d4af37;
-    background: rgba(212,175,55,0.05);
+    border-color: #3f3f46;
+    color: #a1a1aa;
+    background: #111113;
   }
 
   #error-msg {
@@ -320,82 +239,56 @@
     font-size: 13px;
     margin-top: 12px;
     display: none;
-    background: rgba(248,113,113,0.08);
-    border: 1px solid rgba(248,113,113,0.2);
+    background: rgba(248,113,113,0.06);
+    border: 1px solid rgba(248,113,113,0.15);
     padding: 10px 14px;
-    border-radius: 8px;
+    border-radius: 10px;
   }
 
-  /* Footer */
   footer {
-    margin-top: 32px;
+    margin-top: 40px;
     text-align: center;
     font-size: 12px;
-    color: #3d5c3d;
+    color: #27272a;
   }
-
-  footer span { color: #d4af37; }
-
-  /* Corner decorations */
-  .corner-tl, .corner-tr, .corner-bl, .corner-br {
-    position: absolute;
-    width: 20px; height: 20px;
-    border-color: rgba(212,175,55,0.3);
-    border-style: solid;
-  }
-  .corner-tl { top: 12px; left: 12px; border-width: 1px 0 0 1px; }
-  .corner-tr { top: 12px; right: 12px; border-width: 1px 1px 0 0; }
-  .corner-bl { bottom: 12px; left: 12px; border-width: 0 0 1px 1px; }
-  .corner-br { bottom: 12px; right: 12px; border-width: 0 1px 1px 0; }
 </style>
 </head>
 <body>
 <div class="wrapper">
 
   <header>
-    <div class="arabic-text">محسّن الأوامر الذكي</div>
-    <div class="logo">
-      <div class="logo-icon">✦</div>
-      <span class="logo-name"><span class="part1">Prompt</span><span class="part2">Craft</span></span>
-    </div>
-    <p class="tagline">Transform vague prompts into powerful, precise instructions</p>
-    <div class="divider">
-      <div class="divider-line"></div>
-      <div class="divider-diamond"></div>
-      <div class="divider-line"></div>
-    </div>
+    <div class="badge">AI Powered</div>
+    <h1>Make your prompts<br><span class="highlight">actually work.</span></h1>
+    <p>Paste a rough prompt, get a precise and powerful one instantly.</p>
   </header>
 
-  <!-- Input -->
-  <div class="card">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
+  <textarea id="inputPrompt" rows="5" placeholder='e.g. "write me something about marketing"'></textarea>
 
-    <div class="section-label">Your Prompt</div>
-    <textarea id="inputPrompt" rows="5" placeholder='Type your rough prompt here... e.g. "write something about marketing"'></textarea>
-
-    <div class="modes">
-      <button class="mode-btn active" onclick="setMode(this,'Balanced')">⚖️ Balanced</button>
-      <button class="mode-btn" onclick="setMode(this,'Detailed')">🔍 Detailed</button>
-      <button class="mode-btn" onclick="setMode(this,'Concise')">⚡ Concise</button>
-      <button class="mode-btn" onclick="setMode(this,'Creative')">🎨 Creative</button>
-      <button class="mode-btn" onclick="setMode(this,'Technical')">🔧 Technical</button>
-    </div>
-
-    <button id="optimizeBtn" onclick="optimize()">
-      <div class="spinner" id="spinner"></div>
-      <span id="btnText">✦ Optimize Prompt</span>
-    </button>
-
-    <div id="error-msg"></div>
+  <div class="modes">
+    <button class="mode-btn active" onclick="setMode(this,'Balanced')">⚖️ Balanced</button>
+    <button class="mode-btn" onclick="setMode(this,'Detailed')">🔍 Detailed</button>
+    <button class="mode-btn" onclick="setMode(this,'Concise')">⚡ Concise</button>
+    <button class="mode-btn" onclick="setMode(this,'Creative')">🎨 Creative</button>
+    <button class="mode-btn" onclick="setMode(this,'Technical')">🔧 Technical</button>
   </div>
 
-  <!-- Output -->
-  <div class="card" id="result-section">
-    <div class="corner-tl"></div><div class="corner-tr"></div>
-    <div class="corner-bl"></div><div class="corner-br"></div>
+  <button id="optimizeBtn" onclick="optimize()">
+    <div class="spinner" id="spinner"></div>
+    <span id="btnText">Optimize Prompt →</span>
+  </button>
 
-    <div class="section-label">Optimized Prompt</div>
+  <div id="error-msg"></div>
+
+  <div id="result-section">
+    <div class="divider">
+      <div class="divider-line"></div>
+      <div class="divider-text">optimized result</div>
+      <div class="divider-line"></div>
+    </div>
+
+    <div class="output-header">
+      <span class="output-label">✦ Result</span>
+    </div>
     <div class="tags" id="tags"></div>
     <div class="output-box" id="output-box"></div>
     <div class="actions">
@@ -405,7 +298,7 @@
     </div>
   </div>
 
-  <footer>Powered by <span>Groq AI</span> &nbsp;·&nbsp; PromptCraft &nbsp;·&nbsp; <span>بالعربية والأردية</span></footer>
+  <footer>PromptCraft · Powered by Groq AI</footer>
 </div>
 
 <script>
@@ -462,7 +355,7 @@
         document.getElementById('output-box').textContent = data.optimized;
         var tagsEl = document.getElementById('tags');
         tagsEl.innerHTML = improvementTags[currentMode].map(function(t) {
-          return '<span class="tag">✦ ' + t + '</span>';
+          return '<span class="tag">' + t + '</span>';
         }).join('');
         document.getElementById('result-section').style.display = 'block';
       }
@@ -474,7 +367,7 @@
 
     btn.disabled = false;
     spinner.style.display = 'none';
-    btnText.textContent = '✦ Optimize Prompt';
+    btnText.textContent = 'Optimize Prompt →';
   }
 
   function copyOutput() {
